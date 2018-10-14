@@ -30,8 +30,6 @@ class MyHTMLParser(HTMLParser):
     type_status     = [] # column 5
     charges         = [] # column 6+
 
-    count = 0
-
     def record_reset(self):
         self.case_number     = '' # column 1
         self.citation_number = [] # column 2
@@ -56,13 +54,11 @@ class MyHTMLParser(HTMLParser):
             self.currentTag = ''
             record = Record(self.info, self.case_number, self.citation_number, self.date_location, self.type_status, self.charges)
             self.records.append(record)
-            #print("")
-
 
     def handle_data(self, data):
-        #print("Encountered some data:", data)
         if (self.currentTag == 'tr' and self.collectData):
             if (self.column == 1):
+                self.record_reset()
                 self.case_number = data
 
             elif (self.column == 2):
@@ -77,10 +73,7 @@ class MyHTMLParser(HTMLParser):
             elif (self.column == 5):
                 self.type_status.append(data)
             else:
-                self.count += 1
                 self.charges.append(data)
-
-                self.record_reset()
 
         if ('Charge(s)' == data):
             self.collectData = True
