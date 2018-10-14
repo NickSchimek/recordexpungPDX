@@ -54,11 +54,11 @@ class MyHTMLParser(HTMLParser):
             self.currentTag = ''
             record = Record(self.info, self.case_number, self.citation_number, self.date_location, self.type_status, self.charges)
             self.records.append(record)
+            self.record_reset()
 
     def handle_data(self, data):
         if (self.currentTag == 'tr' and self.collectData):
             if (self.column == 1):
-                self.record_reset()
                 self.case_number = data
 
             elif (self.column == 2):
@@ -72,6 +72,7 @@ class MyHTMLParser(HTMLParser):
 
             elif (self.column == 5):
                 self.type_status.append(data)
+
             else:
                 self.charges.append(data)
 
@@ -87,9 +88,9 @@ copy and paste here.
 '''
 )
 
-## Remove first and last record, The first one is duplicate due to when I turn on collection the last is empty.
+## Remove the first two record because they're blank due to starting record collection to early.
 del parser.records[0]
-del parser.records[-1]
+del parser.records[0]
 
 
 print("Number of records", len(parser.records), "\n")
@@ -105,3 +106,21 @@ for record in parser.records:
     print(record.type_status)
     print(record.charges)
     print("\n--------------------------------------------------------------\n")
+
+print("****************************************")
+print("first record")
+print(parser.records[0].info)
+print(parser.records[0].case_number)
+print(parser.records[0].citation_number)
+print(parser.records[0].date_location)
+print(parser.records[0].type_status)
+print(parser.records[0].charges)
+
+print("\n**************************************")
+print("last record")
+print(parser.records[167].info)
+print(parser.records[167].case_number)
+print(parser.records[167].citation_number)
+print(parser.records[167].date_location)
+print(parser.records[167].type_status)
+print(parser.records[167].charges)
