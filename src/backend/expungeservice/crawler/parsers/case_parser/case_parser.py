@@ -12,23 +12,22 @@ class CaseParser(HTMLParser):
 
     def __init__(self):
         HTMLParser.__init__(self)
-        self.table_title = ''
-        self.within_table_header = False
-        self.charge_table_data = []
-        self.event_table_data = []
+        self._table_title = ''
+        self._within_table_header = False
+        self._charge_table_data = []
+        self._event_table_data = []
 
         self.balance_due = '0'
         self.hashed_dispo_data = {}
         self.hashed_charge_data = {}
 
-        self.current_parser_state = DefaultState()
+        self._current_parser_state = DefaultState()
 
     def handle_starttag(self, tag, attrs):
         if CaseParser.__at_table_title(tag, attrs):
-            self.within_table_header = True
-            self.current_parser_state = DefaultState()
-
-        self.current_parser_state.check_tag(tag)
+            self._within_table_header = True
+            self._current_parser_state = DefaultState()
+        self._current_parser_state.check_tag(tag)
 
     def handle_endtag(self, tag):
         charge_table = 'Charge Information'
@@ -36,20 +35,20 @@ class CaseParser(HTMLParser):
         financial_table = 'Financial Information'
 
         if self.__exiting_table_header(tag):
-            self.within_table_header = False
-            if charge_table == self.table_title:
-                self.current_parser_state = ChargeTableData()
-            elif event_table == self.table_title:
-                self.current_parser_state = EventTableData()
-            elif financial_table == self.table_title:
-                self.current_parser_state = FinancialTableData()
+            self._within_table_header = False
+            if charge_table == self._table_title:
+                self._current_parser_state = ChargeTableData()
+            elif event_table == self._table_title:
+                self._current_parser_state = EventTableData()
+            elif financial_table == self._table_title:
+                self._current_parser_state = FinancialTableData()
 
         if self.__end_of_file(tag):
             self.__format_dispo_data()
             self.__create_charge_hash()
 
     def handle_data(self, data):
-        self.current_parser_state.store_data(self, data)
+        self._current_parser_state.store_data(self, data)
 
     # TODO: Add error handling.
     def error(self, message):
@@ -62,7 +61,7 @@ class CaseParser(HTMLParser):
         return tag == 'div' and dict(attrs).get('class') == 'ssCaseDetailSectionTitle'
 
     def __exiting_table_header(self, end_tag):
-        return self.within_table_header and end_tag == 'tr'
+        return self._within_table_header and end_tag == 'tr'
 
     def __end_of_file(self, tag):
         return tag == 'body'
@@ -85,7 +84,7 @@ class CaseParser(HTMLParser):
 
     def __filter_dispo_events(self):
         dispo_list = []
-        for event_row in self.event_table_data:
+        for event_row in self._event_table_data:
             if len(event_row) > 3 and event_row[3] == 'Disposition':
                 dispo_list.append(event_row)
 
@@ -102,11 +101,11 @@ class CaseParser(HTMLParser):
 
     def __create_charge_hash(self):
         index = 0
-        while index < len(self.charge_table_data):
-            charge_id = int(re.compile('\d*').match(self.charge_table_data[index]).group())
+        while index < len(self._charge_table_data):
+            charge_id = int(re.compile('\d*').match(self._charge_table_data[index]).group())
             self.hashed_charge_data[charge_id] = {}
-            self.hashed_charge_data[charge_id]['name'] = self.charge_table_data[index + 1]
-            self.hashed_charge_data[charge_id]['statute'] = self.charge_table_data[index + 2]
-            self.hashed_charge_data[charge_id]['level'] = self.charge_table_data[index + 3]
-            self.hashed_charge_data[charge_id]['date'] = self.charge_table_data[index + 4]
+            self.hashed_charge_data[charge_id]['name'] = self._charge_table_data[index + 1]
+            self.hashed_charge_data[charge_id]['statute'] = self._charge_table_data[index + 2]
+            self.hashed_charge_data[charge_id]['level'] = self._charge_table_data[index + 3]
+            self.hashed_charge_data[charge_id]['date'] = self._charge_table_data[index + 4]
             index += 5

@@ -5,7 +5,7 @@ class DefaultState:
 
     def store_data(self, case_parser, data):
       if self.read_table_title:
-        case_parser.table_title = data
+        case_parser._table_title = data
         self.read_table_title = False
 
     def check_tag(self, tag):
