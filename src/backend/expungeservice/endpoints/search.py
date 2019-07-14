@@ -13,6 +13,7 @@ from flask.wrappers import Response
 
 from expungeservice.crawler.crawler import Crawler
 
+
 class SearchQuery(MethodView):
     def __init__(self):
         self.query = None
@@ -22,17 +23,14 @@ class SearchQuery(MethodView):
         self.crawler = Crawler()
         self.crawler_login = None
 
-
     def post(self):
-        self.crawler.login('username', 'password')
-        record = self.crawler.search('john', 'doe')
+        logged_in = self.crawler.login('username', 'password')
 
-        # expunger = Expunger(record)
-        # expunged = expunger.run()
-
-        # if expunged:
-        if record:
-            return Response('success', status=200)
+        if logged_in:
+            record = self.crawler.search('john', 'doe')
+            # expunger = Expunger(record)
+            # expunger.run()
+            return Response('success', status=200)  # will want to return record.
         else:
             return Response('unsuccessful', 404)
 
@@ -42,5 +40,3 @@ def register(app):
     # app.add_url_rules will go here
     app.add_url_rule('/api/v0.1/search', view_func=SearchQuery.as_view('search'))
 #    app.add_url_rule('/api/v0.1/search/crawler_init', SearchQuery.crawler_init)
-
-
