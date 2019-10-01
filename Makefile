@@ -88,3 +88,4 @@ dev_drop_database:
 .PHONY: $(REQUIREMENTS_TXT)
 $(REQUIREMENTS_TXT):
 	cd src/backend && pipenv lock -r > $@
+	cd ../..
