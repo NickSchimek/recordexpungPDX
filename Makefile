@@ -15,7 +15,7 @@ PGDATABASE := record_expunge
 DB_CONTAINER_NAME := db
 BACKEND_CONTAINER_NAME := expungeservice
 FRONTEND_CONTAINER_NAME := webserver
-REQUIREMENTS_TXT := src/backend/expungeservice/requirements.txt
+REQUIREMENTS_TXT := src/backend/requirements.txt
 
 dev: dev_up
 
