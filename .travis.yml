@@ -11,9 +11,9 @@ addons:
 before_install:
 - docker swarm init
 install:
-- cp ./src/backend/expungeservice/Pipfile ./src/backend/expungeservice/Pipfile.lock ./
 - pip install pipenv
-- pipenv install
+- cd src/backend && pipenv install
+- cd ../..
 - make src/backend/expungeservice/requirements.txt database_image expungeservice_image
 - docker stack deploy -c docker-compose.test.yml recordexpungpdx
 before_script:
