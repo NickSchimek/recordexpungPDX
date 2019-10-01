@@ -1,9 +1,7 @@
 .PHONY: install run clean
 
 install:
-	cp src/backend/expungeservice/Pipfile src/backend/expungeservice/Pipfile.lock ./
-	cp ./.env.example ./.env
-	pipenv install
+	cd src/backend && pipenv install
 
 clean:
 	rm -rf src/backend/*.egg-info
@@ -79,7 +77,7 @@ weblogs:
 	docker logs --details -ft $$(docker ps -qf name=$(FRONTEND_CONTAINER_NAME))
 
 test:
-	pipenv run pytest --ignore=src/frontend/
+	cd src/backend && pipenv run pytest
 
 dev_test:
 	docker exec $$(docker ps -qf name=$(BACKEND_CONTAINER_NAME)) pytest
