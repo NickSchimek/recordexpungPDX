@@ -16,7 +16,7 @@ services:
 
     expungeservice:
         build:
-            context: ./src/backend/expungeservice
+            context: ./src/backend
             dockerfile: Dockerfile.dev
         container_name: expungeservice
         env_file:
